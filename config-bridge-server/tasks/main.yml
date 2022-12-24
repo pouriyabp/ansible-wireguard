@@ -1,0 +1,5 @@
+---
+- name: create new table
+  ansible.builtin.lineinfile:
+    path: /etc/iproute2/rt_tables
+    line: "{{ routing_table.id }} {{ routing_table.name }}"

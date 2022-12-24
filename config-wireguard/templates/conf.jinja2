@@ -1,0 +1,18 @@
+[Interface]
+Address = {{ wireguard_interface.ip_address }}
+PrivateKey = {{ wireguard_interface.privatekey }}
+ListenPort = {{ wireguard_interface.listen_port }}
+mtu = 9000
+PostUp = iptables -A FORWARD -i {{ wireguard_interface.name }} -j ACCEPT; iptables -t nat -A POSTROUTING  -j MASQUERADE
+PostDown = iptables -D FORWARD -i {{ wireguard_interface.name }} -j ACCEPT; iptables -t nat -D POSTROUTING -j MASQUERADE
+{% if wireguard_interface.table.enable %}
+table = {{ wireguard_interface.table.name }}
+{% endif %}
+
+{% for peer in wireguard_peer %}
+[Peer]
+PublicKey = {{ peer.publickey }}
+AllowedIPs = {{ peer.allowed_ip }}
+Endpoint = {{ peer.endpoint_ip_address }}:{{ peer.endpoint_port }}
+persistentKeepalive = 25
+{% endfor %}

@@ -1,0 +1,14 @@
+---
+wireguard_interface:
+  name: wg0
+  privatekey: 2ECMJ4RjYOO9isXYriyJwWFM6ezPgEPi71dlnZvVd1g=
+  ip_address: 10.100.110.1
+  listen_port: 3333
+  table:
+    enable: false
+    name: custom
+wireguard_peer:
+  - publickey: oodylUiXT9+K2H/cal0bMTjIpYfAUrzg2tCZHK2Kags=
+    allowed_ip: 10.100.110.2
+    endpoint_ip_address: 1.2.3.4
+    endpoint_port: 8888

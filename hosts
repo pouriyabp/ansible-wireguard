@@ -1,0 +1,11 @@
+
+[wireguard-server]
+Bridg_server ansible_ssh_private_key_file=./ssh_key ansible_user=ubuntu
+Upstream_server ansible_ssh_private_key_file=./ssh_key ansible_user=ubuntu
+
+[wireguard-bridge-server]
+Bridg_server ansible_ssh_private_key_file=./ssh_key ansible_user=ubuntu
+
+
+[wireguard-upstream-server]
+Upstream_server ansible_ssh_private_key_file=./ssh_key ansible_user=ubuntu
