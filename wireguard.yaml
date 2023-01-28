@@ -13,6 +13,8 @@
           - wireguard
           - iptables
           - resolvconf
+          - g++
+          - make
 
 - name: config servers for routing
   hosts: wireguard-server
@@ -58,12 +60,14 @@
         msg: "{{ upstream_public_key.stdout }}"
         
 
-- name: Generate config file for bridge server
+- name: Generate config file and start wireguard interface in bridge server
   hosts: wireguard-bridge-server
   become: true
   become_user: root
   gather_facts: no
   vars:
+    udp2raw_local_port: 3330
+    upstream_endpoint_ip: "{{ groups['wireguard-upstream-server'][0] }}"
     wireguard_interface:
       name: wg0
       privatekey: "{{ hostvars.localhost.bridge_private_key.stdout }}"
@@ -74,19 +78,23 @@
         name: custom
     wireguard_peer:
       - publickey: "{{ hostvars.localhost.upstream_public_key.stdout }}"
-        allowed_ip: 10.100.110.2
-        endpoint_ip_address: "{{ groups['wireguard-upstream-server'][0] }}"
-        endpoint_port: 8888
+        allowed_ip: "10.100.110.2, 0.0.0.0/0"
+        #endpoint_ip_address: "{{ groups['wireguard-upstream-server'][0] }}"
+        endpoint_ip_address: 127.0.0.1
+        endpoint_port: 8880
   roles:
     - config-wireguard
+    - config-udp2raw
 
 
-- name: Generate config file for upstream server
+- name: Generate config file and start wireguard interface in upstream server
   hosts: wireguard-upstream-server
   gather_facts: no
   become: true
   become_user: root
   vars:
+    udp2raw_local_port: 8880
+    upstream_endpoint_ip: "{{  groups['wireguard-bridge-server'][0] }}"
     wireguard_interface:
       name: wg0
       privatekey: "{{ hostvars.localhost.upstream_private_key.stdout }}"
@@ -97,7 +105,10 @@
     wireguard_peer:
       - publickey: "{{ hostvars.localhost.bridge_public_key.stdout }}"
         allowed_ip: 10.100.110.1
-        endpoint_ip_address: "{{ groups['wireguard-bridge-server'][0] }}"
-        endpoint_port: 3333
+        #endpoint_ip_address: "{{ groups['wireguard-bridge-server'][0] }}"
+        endpoint_ip_address: 127.0.0.1
+        endpoint_port: 3330
   roles:
     - config-wireguard
+    - config-udp2raw
+

@@ -1,0 +1,12 @@
+[Unit]
+Description=UDP2RAW SENDER Service
+
+[Service]
+{% for peer in wireguard_peer %}
+ExecStart=/usr/local/bin/udp2raw  -c -l0.0.0.0:{{ peer.endpoint_port }} -r {{ upstream_endpoint_ip }}:{{ peer.endpoint_port }} -k "passwd" --raw-mode faketcp
+{% endfor %}
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target

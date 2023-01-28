@@ -1,0 +1,10 @@
+[Unit]
+Description=UDP2RAW RECEIVER Service
+
+[Service]
+ExecStart=/usr/local/bin/udp2raw -s -l0.0.0.0:{{ udp2raw_local_port }} -r 127.0.0.1:{{ wireguard_interface.listen_port }} -k "passwd" --raw-mode faketcp
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target

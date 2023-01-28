@@ -4,5 +4,8 @@
     src: conf.jinja2
     dest: /etc/wireguard/{{ wireguard_interface.name }}.conf
 
-- name: Start wireguard wireguard interface
-  ansible.builtin.command: wg-quick up {{ wireguard_interface.name }}
+- name: start wireguard and enable on boot
+  ansible.builtin.systemd:
+    name: wg-quick@{{ wireguard_interface.name }}
+    enabled: yes
+    state: restarted

@@ -1,0 +1,44 @@
+---
+- name: Clone udp2raw repository
+  ansible.builtin.git:
+    repo: https://github.com/wangyu-/udp2raw.git
+    dest: /usr/src/udp2raw
+
+- name: compile udp2raw code
+  ansible.builtin.make:
+    chdir: /usr/src/udp2raw
+
+- name: Move binary to /usr/local/bin
+  ansible.builtin.copy:
+    src: /usr/src/udp2raw/udp2raw
+    dest: /usr/local/bin/udp2raw
+    remote_src: True
+    mode: 755
+
+- name: Generate and copy udp2raw receiver service
+  ansible.builtin.template:
+    src: udp2raw_receiver@.service.jinja2
+    dest: /etc/systemd/system/udp2raw_receiver@.service
+    mode: 0644
+
+- name: Generate and copy udp2raw sender service
+  ansible.builtin.template:
+    src: udp2raw_sender@.service.jinja2
+    dest: /etc/systemd/system/udp2raw_sender@.service
+    mode: 0644
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Start udp2raw sender service
+  systemd:
+    name: udp2raw_receiver@{{ wireguard_interface.name }}
+    state: started
+    enabled: yes
+
+- name: Start udp2raw receiver service
+  systemd:
+    name: udp2raw_sender@{{ wireguard_interface.name }}
+    state: started
+    enabled: yes
