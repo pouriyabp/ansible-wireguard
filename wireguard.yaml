@@ -15,6 +15,7 @@
           #- resolvconf
           - g++
           - make
+          - git
 
 - name: config servers for routing
   hosts: wireguard-server
