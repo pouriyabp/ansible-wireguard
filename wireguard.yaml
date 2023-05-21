@@ -12,7 +12,7 @@
         pkg:
           - wireguard
           - iptables
-          #- resolvconf
+          - resolvconf
           - g++
           - make
           - git
